@@ -185,7 +185,11 @@ pipeline {
                         set -e
 
                         echo "=== SonarQube Analysis ==="
-                        sonar-scanner
+
+                        sonar-scanner \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.java.test.binaries=target/test-classes \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
                         echo "=== SonarQube Analysis Completed ==="
                     '''
@@ -198,11 +202,12 @@ pipeline {
         // ============================================================
         stage('Quality Gate') {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 30, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
+
         // ============================================================
         // PACKAGE APPLICATION (Spring Boot JAR)
         // ============================================================
