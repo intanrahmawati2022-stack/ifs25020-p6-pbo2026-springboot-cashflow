@@ -110,7 +110,7 @@ class OpenAiFinanceServiceTest {
 
     @Test
     void missingChoicesIsRejected() throws Exception {
-        OpenAiFinanceService service = new OpenAiFinanceService("e", "k", "m", clientReturning(200, "{}"));
+        OpenAiFinanceService service = new OpenAiFinanceService("http://ai.test", "k", "m", clientReturning(200, "{}"));
         assertThrows(DomainException.class, () -> service.generateTransactions("x"));
     }
 
@@ -118,13 +118,13 @@ class OpenAiFinanceServiceTest {
     void unreadableJsonIsRejected() throws Exception {
         DomainException inner = assertThrows(DomainException.class, () -> generate("[abc]"));
         assertTrue(inner.getMessage().contains("dibaca"));
-        OpenAiFinanceService outer = new OpenAiFinanceService("e", "k", "m", clientReturning(200, "bukan json"));
+        OpenAiFinanceService outer = new OpenAiFinanceService("http://ai.test", "k", "m", clientReturning(200, "bukan json"));
         assertThrows(DomainException.class, () -> outer.generateTransactions("x"));
     }
 
     @Test
     void non2xxStatusIsRejected() throws Exception {
-        OpenAiFinanceService service = new OpenAiFinanceService("e", "k", "m", clientReturning(500, "error"));
+        OpenAiFinanceService service = new OpenAiFinanceService("http://ai.test", "k", "m", clientReturning(500, "error"));
         DomainException e = assertThrows(DomainException.class, () -> service.generateTransactions("x"));
         assertTrue(e.getMessage().contains("500"));
     }
